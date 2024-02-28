@@ -4,11 +4,11 @@ import { Router } from 'itty-router';
 
 const router = Router();
 
-router.get("/webhook", challenge);
-router.post("/webhook", webhook);
+router.get('/webhook', challenge);
+router.post('/webhook', webhook);
 
-router.all("*", () => new Response("404, not found!", { status: 404 }))
+router.all('*', () => new Response('404, not found!', { status: 404 }));
 
 addEventListener('fetch', (e) => {
-	e.respondWith(router.handle(e.request))
-})
+	e.respondWith(router.handle(e.request));
+});

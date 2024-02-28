@@ -5,22 +5,22 @@ export const REL_SELF = 'self';
 
 export const getStepStates = (obj) => {
 	const steps = [];
-	obj["_embedded"].stepStates.forEach(function(step) {
-		steps.push({'name': `- ${step.action}:`, 'value': step.status});
+	obj['_embedded'].stepStates.forEach(function(step) {
+		steps.push({ 'name': `- ${step.action}:`, 'value': step.status });
 	});
 	return steps;
-}
+};
 
 export const getLink = (obj, linkType) => {
 	return obj['_links'][linkType].href;
-}
+};
 
 export const getPipelineExecutionUrl = (obj, linkType) => {
-	const pipelineExecutionPath = getLink(obj, linkType).replace("/api", "");
+	const pipelineExecutionPath = getLink(obj, linkType).replace('/api', '');
 	return CM_PIPELINE_EXECUTION_BASE_URL + pipelineExecutionPath;
-}
+};
 
-export async function makeApiCall(url, method){
+export async function makeApiCall(url, method) {
 	const response = await fetch(url, {
 		'method': method,
 		'headers': {
@@ -32,7 +32,7 @@ export async function makeApiCall(url, method){
 	return response.json();
 }
 
-export async function getPipelineExecution (executionUrl) {
+export async function getPipelineExecution(executionUrl) {
 	const execution = await makeApiCall(executionUrl, 'GET');
 
 	const programLink = getLink(execution, REL_PROGRAM);
@@ -46,7 +46,7 @@ export async function getPipelineExecution (executionUrl) {
 	return execution;
 }
 
-export async function getStepStateExecution (stepStateUrl) {
+export async function getStepStateExecution(stepStateUrl) {
 	const stepStateExecution = await makeApiCall(stepStateUrl, 'GET');
 
 	const programLink = getLink(stepStateExecution, REL_PROGRAM);
