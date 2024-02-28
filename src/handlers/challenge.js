@@ -9,7 +9,8 @@ export default async request => {
 			return new Response('No challenge', { status: 400 });
 		}
 	} catch (err) {
-		console.error(err);
-		return new Response('Unable to handle challenge.', { status: 500 });
+		const errorMsg = 'Unable to handle challenge';
+		console.error(`${errorMsg} => ${err.message}`);
+		return new Response(errorMsg, { status: 500 });
 	}
 }

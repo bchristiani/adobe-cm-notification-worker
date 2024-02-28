@@ -71,8 +71,9 @@ export default async request => {
 			return new Response('pong');
 		}
 	} catch (err) {
-		console.error(err);
-		return new Response('Unable to handle webhook.', { status: 500 });
+		const errorMsg = 'Unable to handle webhook';
+		console.error(`${errorMsg} => ${err.message}`);
+		return new Response(errorMsg, { status: 500 });
 	}
 }
 
