@@ -49,7 +49,7 @@ export default async request => {
 				const title = `Execution Step > ${execution.action} - started`;
 				console.log(title);
 				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution.execution), getPipelineExecutionUrl(execution, REL_EXECUTION));
-			} else if (ENDED === event['@type'] && EXECUTION_STEP === eventObjType) {
+			} else if (ENDED === eventType && EXECUTION_STEP === eventObjType) {
 				const execution = await getStepStateExecution(executionUrl);
 				const startedDate = new Date(execution.startedAt);
 				const finishedDate = new Date(execution.finishedAt);
