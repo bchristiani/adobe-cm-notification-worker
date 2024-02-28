@@ -1,4 +1,5 @@
 export default async request => {
+	console.log('Handling challenge probe')
 	try {
 		const url = new URL(request.url);
 		const params = url.searchParams;
@@ -8,6 +9,7 @@ export default async request => {
 			return new Response('No challenge', { status: 400 });
 		}
 	} catch (err) {
+		console.error(err);
 		return new Response('Unable to handle challenge.', { status: 500 });
 	}
 }

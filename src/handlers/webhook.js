@@ -1,15 +1,16 @@
 import { notifyTeams } from '../utils/teams';
 import { diffInMinutes, toTimeString } from '../utils/date';
 import {
-	getPipelineExecution,
+	getExecution,
 	getPipelineExecutionUrl,
-	getStepStateExecution,
+	getStepState,
 	getStepStates,
 	REL_EXECUTION,
 	REL_SELF
 } from '../utils/cloud-manager';
 
 export default async request => {
+	console.log('Handling incoming event');
 	try {
 		const body = await request.text();
 		const { recipient_client_id, event } = JSON.parse(body);
@@ -25,17 +26,17 @@ export default async request => {
 
 			const eventType = event['@type'];
 			const eventObjType = event['xdmEventEnvelope:objectType'];
-			const executionUrl = event['activitystreams:object']['@id'];
+			const eventObjUrl = event['activitystreams:object']['@id'];
 
 			if (STARTED === eventType && EXECUTION_PIPELINE === eventObjType) {
-				const execution = await getPipelineExecution(executionUrl);
+				const execution = await getExecution(eventObjUrl);
 				const createdDate = new Date(execution.createdAt);
 				const status = `**Status:** ${execution.status} | **Trigger:** ${execution.trigger} | **Created At:** ${toTimeString(createdDate)}`;
 				const title = 'Pipeline - started';
 				console.log(title);
 				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getPipelineExecutionUrl(execution, REL_SELF));
 			} else if (ENDED === eventType && EXECUTION_PIPELINE === eventObjType) {
-				const execution = await getPipelineExecution(executionUrl);
+				const execution = await getExecution(eventObjUrl);
 				const createdDate = new Date(execution.createdAt);
 				const finishedDate = new Date(execution.finishedAt);
 				const status = `**Status:** ${execution.status} | **Trigger:** ${execution.trigger} | **Created At:** ${toTimeString(createdDate)} | **Finished At:** ${toTimeString(finishedDate)} | **Duration:** ${diffInMinutes(finishedDate, createdDate)} minutes`;
@@ -43,33 +44,34 @@ export default async request => {
 				console.log(title);
 				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getPipelineExecutionUrl(execution, REL_SELF));
 			} else if (STARTED === eventType && EXECUTION_STEP === eventObjType) {
-				const execution = await getStepStateExecution(executionUrl);
-				const startedDate = new Date(execution.startedAt);
-				const status = `**Status:** ${execution.status} | **Started At:** ${toTimeString(startedDate)}`;
-				const title = `Execution Step > ${execution.action} - started`;
+				const stepState = await getStepState(eventObjUrl);
+				const startedDate = new Date(stepState.startedAt);
+				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)}`;
+				const title = `Execution Step > ${stepState.action} - started`;
 				console.log(title);
-				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution.execution), getPipelineExecutionUrl(execution, REL_EXECUTION));
+				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
 			} else if (ENDED === eventType && EXECUTION_STEP === eventObjType) {
-				const execution = await getStepStateExecution(executionUrl);
-				const startedDate = new Date(execution.startedAt);
-				const finishedDate = new Date(execution.finishedAt);
-				const status = `**Status:** ${execution.status} | **Started At:** ${toTimeString(startedDate)} | **Finished At:** ${toTimeString(finishedDate)}`;
-				const title = `Execution Step > ${execution.action} - ended`;
+				const stepState = await getStepState(eventObjUrl);
+				const startedDate = new Date(stepState.startedAt);
+				const finishedDate = new Date(stepState.finishedAt);
+				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)} | **Finished At:** ${toTimeString(finishedDate)}`;
+				const title = `Execution Step > ${stepState.action} - ended`;
 				console.log(title);
-				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution.execution), getPipelineExecutionUrl(execution, REL_EXECUTION));
+				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
 			} else if (WAITING === eventType && EXECUTION_STEP === eventObjType) {
-				const execution = await getStepStateExecution(executionUrl);
-				const startedDate = new Date(execution.startedAt);
-				const status = `**Status:** ${execution.status} | **Started At:** ${toTimeString(startedDate)}`;
-				const title = `Execution Step > ${execution.action} - waiting`;
+				const stepState = await getStepState(eventObjUrl);
+				const startedDate = new Date(stepState.startedAt);
+				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)}`;
+				const title = `Execution Step > ${stepState.action} - waiting`;
 				console.log(title);
-				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution.execution), getPipelineExecutionUrl(execution, REL_EXECUTION));
+				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
 			} else {
-				console.error('Unexpected event received');
+				console.warn('Received unexpected event');
 			}
 			return new Response('pong');
 		}
 	} catch (err) {
+		console.error(err);
 		return new Response('Unable to handle webhook.', { status: 500 });
 	}
 }

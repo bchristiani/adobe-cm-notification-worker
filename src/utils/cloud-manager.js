@@ -32,7 +32,7 @@ export async function makeApiCall(url, method) {
 	return response.json();
 }
 
-export async function getPipelineExecution(executionUrl) {
+export async function getExecution(executionUrl) {
 	const execution = await makeApiCall(executionUrl, 'GET');
 
 	const programLink = getLink(execution, REL_PROGRAM);
@@ -46,20 +46,12 @@ export async function getPipelineExecution(executionUrl) {
 	return execution;
 }
 
-export async function getStepStateExecution(stepStateUrl) {
-	const stepStateExecution = await makeApiCall(stepStateUrl, 'GET');
+export async function getStepState(stepStateUrl) {
+	const stepState = await getExecution(stepStateUrl);
 
-	const programLink = getLink(stepStateExecution, REL_PROGRAM);
-	const programUrl = new URL(programLink, stepStateUrl);
-	stepStateExecution.program = await makeApiCall(programUrl, 'GET');
-
-	const pipelineLink = getLink(stepStateExecution, REL_PIPELINE);
-	const pipelineUrl = new URL(pipelineLink, stepStateUrl);
-	stepStateExecution.pipeline = await makeApiCall(pipelineUrl, 'GET');
-
-	const executionLink = getLink(stepStateExecution, REL_EXECUTION);
+	const executionLink = getLink(stepState, REL_EXECUTION);
 	const executionUrl = new URL(executionLink, stepStateUrl);
-	stepStateExecution.execution = await makeApiCall(executionUrl, 'GET');
+	stepState.execution = await makeApiCall(executionUrl, 'GET');
 
-	return stepStateExecution;
+	return stepState;
 }

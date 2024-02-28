@@ -45,10 +45,8 @@ export async function notifyTeams(title, status, pipeline, program, steps, pipel
 			]
 		})
 	});
-	const body = await response.text();
-	if (response.status === 200) {
-		console.log('Notifying Teams was successful.');
-	} else {
+	if (response.status !== 200) {
+		const body = await response.text();
 		console.error(`Notifying Teams has failed with status code ${response.status}: ${body}`);
 	}
 }
