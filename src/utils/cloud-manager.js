@@ -1,3 +1,22 @@
+let accessToken;
+
+async function getAccessToken () {
+	console.log("Obtaining access token");
+	const response = await fetch('https://ims-na1.adobelogin.com/ims/token/v3', {
+		'method': 'POST',
+		'headers': {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		'body': new URLSearchParams({
+			'grant_type': 'client_credentials',
+			'client_id': CLIENT_ID,
+			'client_secret': CLIENT_SECRET,
+			'scope': 'openid,AdobeID,read_organizations,additional_info.projectedProductContext,read_pc.dma_aem_ams'
+		})
+	});
+	return response.ok && response.json();
+}
+
 export const REL_PROGRAM = 'http://ns.adobe.com/adobecloud/rel/program';
 export const REL_PIPELINE = 'http://ns.adobe.com/adobecloud/rel/pipeline';
 export const REL_EXECUTION = 'http://ns.adobe.com/adobecloud/rel/execution';
@@ -21,12 +40,20 @@ export const getPipelineExecutionUrl = (obj, linkType) => {
 };
 
 export async function makeApiCall(url, method) {
+	if (!accessToken) {
+		const accessTokenResponse = await getAccessToken();
+		if (accessTokenResponse && accessTokenResponse.access_token) {
+			accessToken = accessTokenResponse.access_token;
+		} else {
+			console.error('Could not obtain access token');
+		}
+	}
 	const response = await fetch(url, {
 		'method': method,
 		'headers': {
 			'x-gw-ims-org-id': ORGANIZATION_ID,
 			'x-api-key': CLIENT_ID,
-			'Authorization': `Bearer ${ACCESS_TOKEN}`
+			'Authorization': `Bearer ${accessToken}`
 		}
 	});
 	return response.json();
