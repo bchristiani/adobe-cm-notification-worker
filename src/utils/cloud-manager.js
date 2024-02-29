@@ -73,12 +73,12 @@ export async function getExecution(executionUrl) {
 	return execution;
 }
 
-export async function getStepState(stepStateUrl) {
-	const stepState = await getExecution(stepStateUrl);
+export async function getStepStateExecution(stepStateExecutionUrl) {
+	const stepStateExecution = await getExecution(stepStateExecutionUrl);
 
-	const executionLink = getLink(stepState, REL_EXECUTION);
-	const executionUrl = new URL(executionLink, stepStateUrl);
-	stepState.execution = await makeApiCall(executionUrl, 'GET');
+	const pipelineExecutionLink = getLink(stepStateExecution, REL_EXECUTION);
+	const pipelineExecutionUrl = new URL(pipelineExecutionLink, stepStateExecutionUrl);
+	stepStateExecution.execution = await makeApiCall(pipelineExecutionUrl, 'GET');
 
-	return stepState;
+	return stepStateExecution;
 }

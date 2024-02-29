@@ -3,7 +3,7 @@ import { diffInMinutes, toTimeString } from '../utils/date';
 import {
 	getExecution,
 	getPipelineExecutionUrl,
-	getStepState,
+	getStepStateExecution,
 	getStepStates,
 	REL_EXECUTION,
 	REL_SELF
@@ -44,14 +44,14 @@ export default async request => {
 				console.log(title);
 				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getPipelineExecutionUrl(execution, REL_SELF));
 			} else if (STARTED === eventType && EXECUTION_STEP === eventObjType) {
-				const stepState = await getStepState(eventObjUrl);
+				const stepState = await getStepStateExecution(eventObjUrl);
 				const startedDate = new Date(stepState.startedAt);
 				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)}`;
 				const title = `Execution Step > ${stepState.action} - started`;
 				console.log(title);
 				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
 			} else if (ENDED === eventType && EXECUTION_STEP === eventObjType) {
-				const stepState = await getStepState(eventObjUrl);
+				const stepState = await getStepStateExecution(eventObjUrl);
 				const startedDate = new Date(stepState.startedAt);
 				const finishedDate = new Date(stepState.finishedAt);
 				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)} | **Finished At:** ${toTimeString(finishedDate)}`;
@@ -59,7 +59,7 @@ export default async request => {
 				console.log(title);
 				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
 			} else if (WAITING === eventType && EXECUTION_STEP === eventObjType) {
-				const stepState = await getStepState(eventObjUrl);
+				const stepState = await getStepStateExecution(eventObjUrl);
 				const startedDate = new Date(stepState.startedAt);
 				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)}`;
 				const title = `Execution Step > ${stepState.action} - waiting`;
