@@ -1,5 +1,5 @@
 # Microsoft Teams Notifications for Adobe Cloud Manager Pipeline (Cloudfare Worker)
-This webhook using [Cloudfare Workers](https://developers.cloudflare.com/workers/) allows you to send Adobe Cloud Manager CI/CD Pipeline Notifications to Microsoft Teams. You can use it to post and monitor the status of your Cloud Manager deployment pipeline without having to log in to Cloud Manager.
+This webhook allows you to send Adobe Cloud Manager CI/CD Pipeline Notifications to Microsoft Teams. You can use it to post and monitor the status of your Cloud Manager deployment pipeline without having to log in to Cloud Manager. The application using [Cloudfare Workers](https://developers.cloudflare.com/workers/).
 
 
 ## Sample Notifications in Action
