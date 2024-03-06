@@ -45,7 +45,7 @@ Below you will find instructions for local setup and how the Worker application 
 2. `CLIENT_ID` -- this can be found in the Credentials details section of the Adobe Developer Console.
 3. `CLIENT_SECRET` -- this can be found in the Credentials details section of the Adobe Developer Console.
 4. `TEAMS_WEBHOOK` -- this is the incoming webhook URL for Microsoft Teams. Documentation to create a webhook URL for Microsoft Teams can be found [here](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook).
-5. `CM_PIPELINE_EXECUTION_BASE_URL` -- this is the basic URL to the details of the pipeline execution in Cloud Manager, e.g. `https://experience.adobe.com/#/@myprogram/cloud-manager/pipelineexecution.html`. Replace `myprogram` in the URL with the proper program name.
+5. `CM_PIPELINE_EXECUTION_BASE_URL` -- this is the base URL to the details of the pipeline execution in Cloud Manager, e.g. `https://experience.adobe.com/#/@myprogram/cloud-manager/pipelineexecution.html`. Replace `myprogram` in the URL with the proper program name.
 
 #### Secrets in development
 
