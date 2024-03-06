@@ -58,16 +58,20 @@ Documentation to add / update secrets on a deployed Worker can be found [here](h
 
 ### Running the Worker
 
-1. Run the worker on local port
+1. Install NPM packages
+   ```sh
+   npm install
+   ```
+2. Run the worker on local port
    ```sh
    npm start
    ```
-2. In order to use the Worker with Adobe I/O, it must be accessible to the public internet. To do this, the application can be deployed to Cloudfare to a `*.workers.dev` subdomain or [Custom Domain](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/). Deploy the project and set up a subdomain or domain, if you have not configured one, by running
-	 ```sh
+3. In order to use the Worker with Adobe I/O, it must be accessible to the public internet. To do this, the application can be deployed to Cloudfare to a `*.workers.dev` subdomain or [Custom Domain](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/). Deploy the project and set up a subdomain or domain, if you have not configured one, by running
+   ```sh
    npm deploy
    ```
-3. Open the [Adobe Developer Console][Adobe-Developer-Console-url] and open the Project you created in the Prerequisites section. Click `Add to Project` and select `Event`. Select `Cloud Manager Events` and click `Next`. Select the events you want to subscribe to. Click the `Next` button. For receiving events select the `Webhook` option. The Webhook URL will be your Cloudfare Worker subdomain or custom domain appended with `/webhook`, e.g. `https://your-worker.your-subdomain.workers.dev/webhook`
-4. Once a pipeline execution is triggered in Cloud Manager, the subscribed Cloud Manager Events are sent to the Worker which then posts a message to your Microsoft Teams channel.
+4. Open the [Adobe Developer Console][Adobe-Developer-Console-url] and open the Project you created in the Prerequisites section. Click `Add to Project` and select `Event`. Select `Cloud Manager Events` and click `Next`. Select the events you want to subscribe to. Click the `Next` button. For receiving events select the `Webhook` option. The Webhook URL will be your Cloudfare Worker subdomain or custom domain appended with `/webhook`, e.g. `https://your-worker.your-subdomain.workers.dev/webhook`
+5. Once a pipeline execution is triggered in Cloud Manager, the subscribed Cloud Manager Events are sent to the Worker which then posts a message to your Microsoft Teams channel.
 
 
 
