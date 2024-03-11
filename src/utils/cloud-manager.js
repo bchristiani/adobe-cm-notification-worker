@@ -25,7 +25,7 @@ export const REL_SELF = 'self';
 export const getStepStates = (obj) => {
 	const steps = [];
 	obj['_embedded'].stepStates.forEach(function(step) {
-		steps.push({ 'name': `- ${step.action}:`, 'value': step.status });
+		steps.push({ 'name': `[${step.action}]`, 'value': step.status });
 	});
 	return steps;
 };
@@ -34,7 +34,7 @@ export const getLink = (obj, linkType) => {
 	return obj['_links'][linkType].href;
 };
 
-export const getPipelineExecutionUrl = (obj, linkType) => {
+export const getCloudManagerExecutionDetailsLink = (obj, linkType) => {
 	const pipelineExecutionPath = getLink(obj, linkType).replace('/api', '');
 	return CM_PIPELINE_EXECUTION_BASE_URL + pipelineExecutionPath;
 };

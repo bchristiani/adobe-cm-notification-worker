@@ -2,15 +2,19 @@ import { notifyTeams } from '../utils/teams';
 import { diffInMinutes, toTimeString } from '../utils/date';
 import {
 	getExecution,
-	getPipelineExecutionUrl,
+	getCloudManagerExecutionDetailsLink,
 	getStepStateExecution,
 	getStepStates,
 	REL_EXECUTION,
 	REL_SELF
 } from '../utils/cloud-manager';
 
+async function sendNotification(title, status, pipelineName, programName, stepStates, cmExecutionDetailsLink) {
+	console.log(`${title} for Pipeline [${pipelineName}] and Program [${programName}]`);
+	await notifyTeams(title, status, pipelineName, programName, stepStates, cmExecutionDetailsLink);
+}
+
 export default async request => {
-	console.log('Handling incoming event');
 	try {
 		const body = await request.text();
 		const { recipient_client_id, event } = JSON.parse(body);
@@ -31,40 +35,35 @@ export default async request => {
 			if (STARTED === eventType && EXECUTION_PIPELINE === eventObjType) {
 				const execution = await getExecution(eventObjUrl);
 				const createdDate = new Date(execution.createdAt);
-				const status = `**Status:** ${execution.status} | **Trigger:** ${execution.trigger} | **Created At:** ${toTimeString(createdDate)}`;
-				const title = 'Pipeline - started';
-				console.log(title);
-				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getPipelineExecutionUrl(execution, REL_SELF));
+				const status = `**Status:** ${execution.status} - **Trigger:** ${execution.trigger} - **Created:** ${toTimeString(createdDate)}`;
+				const title = 'Pipeline Execution Started';
+				await sendNotification(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getCloudManagerExecutionDetailsLink(execution, REL_SELF));
 			} else if (ENDED === eventType && EXECUTION_PIPELINE === eventObjType) {
 				const execution = await getExecution(eventObjUrl);
 				const createdDate = new Date(execution.createdAt);
 				const finishedDate = new Date(execution.finishedAt);
-				const status = `**Status:** ${execution.status} | **Trigger:** ${execution.trigger} | **Created At:** ${toTimeString(createdDate)} | **Finished At:** ${toTimeString(finishedDate)} | **Duration:** ${diffInMinutes(finishedDate, createdDate)} minutes`;
-				const title = 'Pipeline - ended';
-				console.log(title);
-				await notifyTeams(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getPipelineExecutionUrl(execution, REL_SELF));
+				const status = `**Status:** ${execution.status} - **Trigger:** ${execution.trigger} - **Created:** ${toTimeString(createdDate)} - **Finished:** ${toTimeString(finishedDate)} - **Duration:** ${diffInMinutes(finishedDate, createdDate)} minutes`;
+				const title = 'Pipeline Execution Ended';
+				await sendNotification(title, status, execution.pipeline.name, execution.program.name, getStepStates(execution), getCloudManagerExecutionDetailsLink(execution, REL_SELF));
 			} else if (STARTED === eventType && EXECUTION_STEP === eventObjType) {
 				const stepState = await getStepStateExecution(eventObjUrl);
 				const startedDate = new Date(stepState.startedAt);
-				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)}`;
-				const title = `Execution Step > ${stepState.action} - started`;
-				console.log(title);
-				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
+				const status = `**Status:** ${stepState.status} - **Started:** ${toTimeString(startedDate)}`;
+				const title = `[${stepState.action}] Execution Step Started`;
+				await sendNotification(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getCloudManagerExecutionDetailsLink(stepState, REL_EXECUTION));
 			} else if (ENDED === eventType && EXECUTION_STEP === eventObjType) {
 				const stepState = await getStepStateExecution(eventObjUrl);
 				const startedDate = new Date(stepState.startedAt);
 				const finishedDate = new Date(stepState.finishedAt);
-				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)} | **Finished At:** ${toTimeString(finishedDate)}`;
-				const title = `Execution Step > ${stepState.action} - ended`;
-				console.log(title);
-				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
+				const status = `**Status:** ${stepState.status} - **Started:** ${toTimeString(startedDate)} - **Finished:** ${toTimeString(finishedDate)}`;
+				const title = `[${stepState.action}] Execution Step Ended`;
+				await sendNotification(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getCloudManagerExecutionDetailsLink(stepState, REL_EXECUTION));
 			} else if (WAITING === eventType && EXECUTION_STEP === eventObjType) {
 				const stepState = await getStepStateExecution(eventObjUrl);
 				const startedDate = new Date(stepState.startedAt);
-				const status = `**Status:** ${stepState.status} | **Started At:** ${toTimeString(startedDate)}`;
-				const title = `Execution Step > ${stepState.action} - waiting`;
-				console.log(title);
-				await notifyTeams(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getPipelineExecutionUrl(stepState, REL_EXECUTION));
+				const status = `**Status:** ${stepState.status} - **Started:** ${toTimeString(startedDate)}`;
+				const title = `[${stepState.action}] Execution Step Waiting`;
+				await sendNotification(title, status, stepState.pipeline.name, stepState.program.name, getStepStates(stepState.execution), getCloudManagerExecutionDetailsLink(stepState, REL_EXECUTION));
 			} else {
 				console.warn('Received unexpected event');
 			}

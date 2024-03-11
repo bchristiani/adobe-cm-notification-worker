@@ -1,4 +1,4 @@
-export async function notifyTeams(title, status, pipeline, program, steps, pipelineUrl) {
+export async function notifyTeams(title, status, pipeline, program, steps, cmExecutionDetailsLink) {
 	const response = await fetch(TEAMS_WEBHOOK, {
 		'method': 'POST',
 		'headers': { 'Content-Type': 'application/json' },
@@ -24,21 +24,18 @@ export async function notifyTeams(title, status, pipeline, program, steps, pipel
 					]
 				},
 				{
-					'activityTitle': '**Summary Steps:**',
+					'activityTitle': '**Execution Steps:**',
 					'facts': steps
-				},
-				{
-					'activityTitle': 'View pipeline in Cloud Manager (requires cloud manager access)'
 				}
 			],
 			'potentialAction': [
 				{
 					'@type': 'OpenUri',
-					'name': 'Pipeline Details',
+					'name': 'View Details in Cloud Manager',
 					'targets': [
 						{
 							'os': 'default',
-							'uri': pipelineUrl
+							'uri': cmExecutionDetailsLink
 						}
 					]
 				}
