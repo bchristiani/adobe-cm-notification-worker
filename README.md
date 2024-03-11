@@ -2,7 +2,7 @@
 This webhook allows you to send Adobe Cloud Manager CI/CD Pipeline Notifications to Microsoft Teams. You can use it to post and monitor the status of your Cloud Manager deployment pipeline without having to log in to Cloud Manager. The application using [Cloudfare Workers](https://developers.cloudflare.com/workers/).
 
 
-## Sample Notifications in Action
+## Sample Notifications
 The different types of notifications and how they appear in Microsoft Teams are presented below. Each notification lists the execution steps of the pipeline and its current status, so that the overall progress of the deployment can be read from the latest message. In addition, each message has a button that allows anyone with Cloud Manager access to access the details of the pipeline execution in Cloud Manager.
 
 ### Pipeline Started Notification
@@ -69,6 +69,10 @@ Documentation to add / update secrets on a deployed Worker can be found [here](h
 3. In order to use the Worker with Adobe I/O, it must be accessible to the public internet. To do this, the application can be deployed to Cloudfare to a `*.workers.dev` subdomain or [Custom Domain](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/). Deploy the project and set up a subdomain or domain, if you have not configured one, by running
    ```sh
    npm deploy
+   ```
+   or alternatively you can run
+	 ```sh
+   npx wrangler deploy
    ```
 4. Open the [Adobe Developer Console][Adobe-Developer-Console-url] and open the Project you created in the Prerequisites section. Click `Add to Project` and select `Event`. Select `Cloud Manager Events` and click `Next`. Select the events you want to subscribe to. Click the `Next` button. For receiving events select the `Webhook` option. The Webhook URL will be your Cloudfare Worker subdomain or custom domain appended with `/webhook`, e.g. `https://your-worker.your-subdomain.workers.dev/webhook`
 5. Once a pipeline execution is triggered in Cloud Manager, the subscribed Cloud Manager Events are sent to the Worker which then posts a message to your Microsoft Teams channel.
